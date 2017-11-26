@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>stars</title>
+    <meta charset="utf-8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      html, #fullscreen, body {
+      width: 100%;
+      height: 100%;
+      }
+      body {
+      background-color: #000000;
+      margin: 0px;
+      overflow: hidden;
+      font-family: Monospace;
+      font-size: 10px;
+      text-align: left;
+      }
+
+      * {
+      -webkit-user-select: none;
+      -webkit-appearance: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+      outline-style: none;
+      outline: none;
+      }
+
+      a {
+      color:#ffffcc;
+      text-decoration: none;
+      }
+
+      a:hover, #fork a:hover, #gofull a:hover {
+      background-color: #777;
+      }
+
+      div#fork {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      z-index: 10;
+      }
+
+      div#gofull {
+      position: absolute;
+      bottom: 25px;
+      right: 25px;
+      z-index: 10;
+      cursor: pointer;
+      }
+
+      #fork a, #gofull a {
+      box-shadow: 0px 0px 8px #444;
+      display: inline-block;
+      background-color:  #333;
+      }
+
+      strong {
+      font-weight: bold;
+      font-size: 150%;
+      padding-right: 1em;
+      }
+
+      #author {
+      color: #fff;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      z-index: 10;
+      }
+
+    </style>
+  </head>
+  <body>
+    <script src="three.min.js"></script>
+    <script src="OBJLoader.js"></script>
+    <script type="x-shader/x-vertex" id="vertexshader">
+      uniform vec3 uCameraPos;
+      uniform float uReflection;
+      uniform float uTime;
+      uniform float uSize;
+      attribute float random;
+      varying float vAlpha;
+      varying vec3 vColor;
+
+      void main() {
+      vec3 pposition = position;
+      pposition.y = mod(pposition.y + (0.5 + 0.7 * random) * 1200.0 * uTime, 2048.0) - 1024.0;
+
+      vec4 mvPosition = modelViewMatrix * vec4(pposition, 1.0);
+
+      float cameraDist = distance(pposition.xyz, uCameraPos) + uReflection;
+      float pointScale = 0.5 * 1024.0 * 1024.0 / cameraDist / cameraDist;
+      pointScale = clamp(pointScale, 0.1, 1.0);
+
+      vAlpha = clamp(1.0 * pointScale, 0.01, 1.0);
+      vColor = vec3(1.0, 1.0, 1.0);
+
+      gl_PointSize = (0.5 + 2.0 * random * random) * uSize * pointScale;
+      gl_Position = projectionMatrix * mvPosition;
+      }
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragmentshader">
+      varying vec3 vColor;
+      uniform sampler2D texture;
+      varying float vAlpha;
+      void main() {
+      gl_FragColor = vec4(vColor, vAlpha);
+      gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+      }
+    </script>
+
+    <script src="stars.js"></script>
+    <div id="author"><strong>Stars</Strong><br>by Markku Rontu<br><a href="http://threejs.org">with Three.js</a></div>
+
+    <div id="fork">
+      <a href="https://github.com/Macroz/stars">
+        Fork me on Github
+      </a>
+    </div>
+    <div id="gofull">
+      <a>
+        Fullscreen
+      </a>
+    </div>
+  </body>
+</html>
