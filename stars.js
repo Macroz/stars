@@ -258,9 +258,15 @@ function animate() {
   camera.position.z = z;
 
   camera.lookAt(scene.position);
-  camera.rotation.order = 'XYZ';
-  camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), a / 10.0);
-  camera.up = new THREE.Vector3(0, 0, 1);
+  //camera.rotation.order = 'XYZ';
+  //camera.rotateOnAxis(new THREE.Vector3(0, 0, 1), a / 10.0);
+  //camera.up = new THREE.Vector3(0, 0, 1);
+
+  camera.rotation.z = 7.0 * Math.sin(t * 0.03) + 3.0 * Math.sin(t * 0.03) * Math.sin(t * 0.1) * Math.PI * 2.0;
+
+  if (logoMesh) {
+    logoMesh.rotation.y = -camera.rotation.z + Math.PI;
+  }
 
   //console.log(planes[0].position.y + " " + planes[0].opacity);
   for (var i = 0; i < planes.length; ++i) {
